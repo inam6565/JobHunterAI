@@ -41,6 +41,9 @@ CREATE TABLE IF NOT EXISTS job_preferences (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ALTER TABLE jobs DROP CONSTRAINT IF EXISTS jobs_source_source_job_id_key;
+ALTER TABLE jobs ADD CONSTRAINT jobs_source_source_job_id_key UNIQUE (source, source_job_id);
+
 CREATE INDEX IF NOT EXISTS idx_jobs_source ON jobs (source);
 CREATE INDEX IF NOT EXISTS idx_jobs_company ON jobs (company);
 CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs (status);
