@@ -7,7 +7,7 @@ import { runIngestion } from '../services/ingestion-service.js';
 export const ingestionRouter = Router();
 
 const runIngestionSchema = z.object({
-  source: z.literal('mock'),
+  source: z.enum(['mock', 'remoteok']),
 });
 
 ingestionRouter.post('/run', async (req, res) => {
