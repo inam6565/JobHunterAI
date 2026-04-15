@@ -27,6 +27,7 @@ Initial backend scaffold is in place.
 - single-user profile and preferences APIs
 - ingestion pipeline with mock adapter
 - first real source adapter via RemoteOK JSON feed
+- deterministic matching engine with persisted score breakdown fields
 - PostgreSQL connection scaffold and bootstrap SQL
 - test scaffolding
 - Dockerfile and Compose stack
@@ -69,6 +70,7 @@ Once the service is running:
 - Preferences: `http://localhost:3000/api/v1/preferences`
 - Run mock ingestion: `POST http://localhost:3000/api/v1/ingestion/run` with `{ "source": "mock" }`
 - Run RemoteOK ingestion: `POST http://localhost:3000/api/v1/ingestion/run` with `{ "source": "remoteok" }`
+- Run score recompute: `POST http://localhost:3000/api/v1/matching/run`
 
 ## Security notes
 
@@ -79,8 +81,8 @@ Once the service is running:
 
 ## Next steps
 
+- improve matching heuristics and tuning
 - improve RemoteOK normalization and source-specific mapping
 - add the next real source adapter
-- add ranking logic
 - add resume ingestion flow
 - add a lightweight UI for review workflows
