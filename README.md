@@ -23,7 +23,10 @@ Initial backend scaffold is in place.
 - environment validation with `dotenv-safe` and `zod`
 - health endpoint
 - database health endpoint at `/health/db`
-- placeholder jobs search endpoint with input validation
+- DB-backed jobs API with seeded data
+- single-user profile and preferences APIs
+- ingestion pipeline with mock adapter
+- first real source adapter via RemoteOK JSON feed
 - PostgreSQL connection scaffold and bootstrap SQL
 - test scaffolding
 - Dockerfile and Compose stack
@@ -62,6 +65,10 @@ Once the service is running:
 - Health: `http://localhost:3000/health`
 - DB health: `http://localhost:3000/health/db`
 - Jobs search: `http://localhost:3000/api/v1/jobs?query=backend%20engineer&limit=10`
+- Profile: `http://localhost:3000/api/v1/profile`
+- Preferences: `http://localhost:3000/api/v1/preferences`
+- Run mock ingestion: `POST http://localhost:3000/api/v1/ingestion/run` with `{ "source": "mock" }`
+- Run RemoteOK ingestion: `POST http://localhost:3000/api/v1/ingestion/run` with `{ "source": "remoteok" }`
 
 ## Security notes
 
@@ -72,8 +79,8 @@ Once the service is running:
 
 ## Next steps
 
-- add real database-backed repositories
-- define normalized job schema in code and migrations
-- add resume ingestion flow
-- implement first source adapters
+- improve RemoteOK normalization and source-specific mapping
+- add the next real source adapter
 - add ranking logic
+- add resume ingestion flow
+- add a lightweight UI for review workflows

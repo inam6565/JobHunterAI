@@ -2,8 +2,8 @@ import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('../src/services/ingestion-service.js', () => ({
-  runIngestion: vi.fn(async () => ({
-    source: 'mock',
+  runIngestion: vi.fn(async (source: string) => ({
+    source,
     fetched: 3,
     upserted: 3,
     jobIds: [
@@ -24,6 +24,14 @@ describe('ingestion route', () => {
     expect(response.status).toBe(200);
     expect(response.body.data.source).toBe('mock');
     expect(response.body.data.upserted).toBe(3);
+  });
+
+  it('runs remoteok ingestion successfully', async () => {
+    const app = createApp();
+    const response = await request(app).post('/api/v1/ingestion/run').send({ source: 'remoteok' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.source).toBe('remoteok');
   });
 
   it('rejects invalid ingestion payloads', async () => {
