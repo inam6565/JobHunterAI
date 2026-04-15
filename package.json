@@ -19,7 +19,7 @@
     "ci": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
-    "cors": "2.8.5",
+    "cors": "2.8.6",
     "dotenv-safe": "9.1.0",
     "express": "5.1.0",
     "helmet": "8.1.0",
