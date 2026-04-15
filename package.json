@@ -39,7 +39,7 @@
     "supertest": "7.1.4",
     "tsx": "4.20.5",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.43.0",
+    "typescript-eslint": "8.58.2",
     "vitest": "3.2.4"
   }
 }
