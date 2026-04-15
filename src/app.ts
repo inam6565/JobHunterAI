@@ -8,6 +8,7 @@ import { logger } from './lib/logger.js';
 import { dbHealthRouter } from './routes/db-health.js';
 import { healthRouter } from './routes/health.js';
 import { jobsRouter } from './routes/jobs.js';
+import { preferencesRouter, profileRouter } from './routes/profile.js';
 
 export function createApp() {
   const app = express();
@@ -25,6 +26,8 @@ export function createApp() {
   app.use('/health', healthRouter);
   app.use('/health/db', dbHealthRouter);
   app.use('/api/v1/jobs', jobsRouter);
+  app.use('/api/v1/profile', profileRouter);
+  app.use('/api/v1/preferences', preferencesRouter);
 
   app.use((_req, res) => {
     res.status(404).json({ error: 'Not found' });
