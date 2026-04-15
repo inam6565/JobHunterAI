@@ -1,4 +1,5 @@
 import { db } from '../db/client.js';
+import type { IngestedJobRecord } from '../types/ingestion.js';
 import type { JobRecord, JobSearchFilters, JobStatus } from '../types/job.js';
 
 interface DatabaseJobRow {
@@ -105,4 +106,65 @@ export async function updateJobStatus(id: string, status: JobStatus): Promise<Jo
 
   const row = result.rows[0];
   return row ? mapRow(row) : null;
+}
+
+export async function upsertJobs(
+  jobs: Array<IngestedJobRecord & { id: string }>,
+): Promise<JobRecord[]> {
+  const upsertedJobs: JobRecord[] = [];
+
+  for (const job of jobs) {
+    const result = await db.query<DatabaseJobRow>(
+      `
+        INSERT INTO jobs (
+          id,
+          source,
+          source_job_id,
+          title,
+          company,
+          location,
+          remote_type,
+          employment_type,
+          url,
+          description,
+          status,
+          score
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'new', $11)
+        ON CONFLICT (source, source_job_id)
+        DO UPDATE SET
+          title = EXCLUDED.title,
+          company = EXCLUDED.company,
+          location = EXCLUDED.location,
+          remote_type = EXCLUDED.remote_type,
+          employment_type = EXCLUDED.employment_type,
+          url = EXCLUDED.url,
+          description = EXCLUDED.description,
+          score = EXCLUDED.score,
+          updated_at = NOW()
+        RETURNING id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, created_at, updated_at
+      `,
+      [
+        job.id,
+        job.source,
+        job.sourceJobId,
+        job.title,
+        job.company,
+        job.location,
+        job.remoteType,
+        job.employmentType,
+        job.url,
+        job.description,
+        job.score,
+      ],
+    );
+
+    const row = result.rows[0];
+
+    if (row) {
+      upsertedJobs.push(mapRow(row));
+    }
+  }
+
+  return upsertedJobs;
 }
