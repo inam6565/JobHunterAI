@@ -22,7 +22,9 @@ Initial backend scaffold is in place.
 - secure Express API foundation
 - environment validation with `dotenv-safe` and `zod`
 - health endpoint
+- database health endpoint at `/health/db`
 - placeholder jobs search endpoint with input validation
+- PostgreSQL connection scaffold and bootstrap SQL
 - test scaffolding
 - Dockerfile and Compose stack
 - CI workflow and GitHub security baseline
@@ -54,6 +56,13 @@ test/
 Start the local stack:
 - `docker compose up --build`
 
+## Service endpoints
+
+Once the service is running:
+- Health: `http://localhost:3000/health`
+- DB health: `http://localhost:3000/health/db`
+- Jobs search: `http://localhost:3000/api/v1/jobs?query=backend%20engineer&limit=10`
+
 ## Security notes
 
 - do not commit `.env`
@@ -63,8 +72,8 @@ Start the local stack:
 
 ## Next steps
 
-- add PostgreSQL integration
-- define normalized job schema
+- add real database-backed repositories
+- define normalized job schema in code and migrations
 - add resume ingestion flow
 - implement first source adapters
 - add ranking logic

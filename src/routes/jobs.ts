@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 
+import type { JobRecord } from '../types/job.js';
+
 export const jobsRouter = Router();
 
 const searchSchema = z.object({
@@ -19,8 +21,10 @@ jobsRouter.get('/', (req, res) => {
     });
   }
 
+  const placeholderResults: JobRecord[] = [];
+
   return res.status(200).json({
-    data: [],
+    data: placeholderResults,
     meta: {
       message: 'Search pipeline not implemented yet',
       filters: parsed.data,

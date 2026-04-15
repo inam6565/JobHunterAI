@@ -4,7 +4,6 @@ dist
 .github
 coverage
 .env
-.env.*
 Dockerfile*
 npm-debug.log*
 README.md
