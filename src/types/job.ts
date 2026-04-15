@@ -23,6 +23,12 @@ export interface JobRecord {
   description: string | null;
   status: JobStatus;
   score: number | null;
+  scoreTitle: number | null;
+  scoreSkills: number | null;
+  scoreLocation: number | null;
+  scoreRemote: number | null;
+  scoreEmployment: number | null;
+  matchReasons: string[];
   createdAt: string;
   updatedAt: string;
 }

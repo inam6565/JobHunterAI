@@ -15,8 +15,18 @@ interface DatabaseJobRow {
   description: string | null;
   status: JobStatus;
   score: string | number | null;
+  score_title: string | number | null;
+  score_skills: string | number | null;
+  score_location: string | number | null;
+  score_remote: string | number | null;
+  score_employment: string | number | null;
+  match_reasons: string[] | null;
   created_at: Date;
   updated_at: Date;
+}
+
+function mapNullableNumber(value: string | number | null): number | null {
+  return value === null ? null : Number(value);
 }
 
 function mapRow(row: DatabaseJobRow): JobRecord {
@@ -32,7 +42,13 @@ function mapRow(row: DatabaseJobRow): JobRecord {
     url: row.url,
     description: row.description,
     status: row.status,
-    score: row.score === null ? null : Number(row.score),
+    score: mapNullableNumber(row.score),
+    scoreTitle: mapNullableNumber(row.score_title),
+    scoreSkills: mapNullableNumber(row.score_skills),
+    scoreLocation: mapNullableNumber(row.score_location),
+    scoreRemote: mapNullableNumber(row.score_remote),
+    scoreEmployment: mapNullableNumber(row.score_employment),
+    matchReasons: row.match_reasons ?? [],
     createdAt: row.created_at.toISOString(),
     updatedAt: row.updated_at.toISOString(),
   };
@@ -66,7 +82,7 @@ export async function listJobs(filters: JobSearchFilters): Promise<JobRecord[]> 
 
   const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
   const query = `
-    SELECT id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, created_at, updated_at
+    SELECT id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, score_title, score_skills, score_location, score_remote, score_employment, match_reasons, created_at, updated_at
     FROM jobs
     ${whereClause}
     ORDER BY score DESC NULLS LAST, created_at DESC
@@ -77,10 +93,22 @@ export async function listJobs(filters: JobSearchFilters): Promise<JobRecord[]> 
   return result.rows.map(mapRow);
 }
 
+export async function listJobsForMatching(): Promise<JobRecord[]> {
+  const result = await db.query<DatabaseJobRow>(
+    `
+      SELECT id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, score_title, score_skills, score_location, score_remote, score_employment, match_reasons, created_at, updated_at
+      FROM jobs
+      ORDER BY created_at DESC
+    `,
+  );
+
+  return result.rows.map(mapRow);
+}
+
 export async function getJobById(id: string): Promise<JobRecord | null> {
   const result = await db.query<DatabaseJobRow>(
     `
-      SELECT id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, created_at, updated_at
+      SELECT id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, score_title, score_skills, score_location, score_remote, score_employment, match_reasons, created_at, updated_at
       FROM jobs
       WHERE id = $1
       LIMIT 1
@@ -99,9 +127,51 @@ export async function updateJobStatus(id: string, status: JobStatus): Promise<Jo
       SET status = $2,
           updated_at = NOW()
       WHERE id = $1
-      RETURNING id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, created_at, updated_at
+      RETURNING id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, score_title, score_skills, score_location, score_remote, score_employment, match_reasons, created_at, updated_at
     `,
     [id, status],
+  );
+
+  const row = result.rows[0];
+  return row ? mapRow(row) : null;
+}
+
+export async function updateJobScores(
+  id: string,
+  input: {
+    score: number;
+    scoreTitle: number;
+    scoreSkills: number;
+    scoreLocation: number;
+    scoreRemote: number;
+    scoreEmployment: number;
+    matchReasons: string[];
+  },
+): Promise<JobRecord | null> {
+  const result = await db.query<DatabaseJobRow>(
+    `
+      UPDATE jobs
+      SET score = $2,
+          score_title = $3,
+          score_skills = $4,
+          score_location = $5,
+          score_remote = $6,
+          score_employment = $7,
+          match_reasons = $8,
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, score_title, score_skills, score_location, score_remote, score_employment, match_reasons, created_at, updated_at
+    `,
+    [
+      id,
+      input.score,
+      input.scoreTitle,
+      input.scoreSkills,
+      input.scoreLocation,
+      input.scoreRemote,
+      input.scoreEmployment,
+      input.matchReasons,
+    ],
   );
 
   const row = result.rows[0];
@@ -128,9 +198,15 @@ export async function upsertJobs(
           url,
           description,
           status,
-          score
+          score,
+          score_title,
+          score_skills,
+          score_location,
+          score_remote,
+          score_employment,
+          match_reasons
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'new', $11)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'new', $11, NULL, NULL, NULL, NULL, NULL, '{}')
         ON CONFLICT (source, source_job_id)
         DO UPDATE SET
           title = EXCLUDED.title,
@@ -142,7 +218,7 @@ export async function upsertJobs(
           description = EXCLUDED.description,
           score = EXCLUDED.score,
           updated_at = NOW()
-        RETURNING id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, created_at, updated_at
+        RETURNING id, source, source_job_id, title, company, location, remote_type, employment_type, url, description, status, score, score_title, score_skills, score_location, score_remote, score_employment, match_reasons, created_at, updated_at
       `,
       [
         job.id,

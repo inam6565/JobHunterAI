@@ -11,6 +11,12 @@ CREATE TABLE IF NOT EXISTS jobs (
   description TEXT,
   status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'shortlisted', 'ignored', 'applied')),
   score NUMERIC(5,2),
+  score_title NUMERIC(5,2),
+  score_skills NUMERIC(5,2),
+  score_location NUMERIC(5,2),
+  score_remote NUMERIC(5,2),
+  score_employment NUMERIC(5,2),
+  match_reasons TEXT[] NOT NULL DEFAULT '{}',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
