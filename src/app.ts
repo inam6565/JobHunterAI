@@ -1,10 +1,11 @@
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import pinoHttp from 'pino-http';
+import { pinoHttp } from 'pino-http';
 
 import { env } from './config/env.js';
 import { logger } from './lib/logger.js';
+import { dbHealthRouter } from './routes/db-health.js';
 import { healthRouter } from './routes/health.js';
 import { jobsRouter } from './routes/jobs.js';
 
@@ -22,6 +23,7 @@ export function createApp() {
   app.use(pinoHttp({ logger }));
 
   app.use('/health', healthRouter);
+  app.use('/health/db', dbHealthRouter);
   app.use('/api/v1/jobs', jobsRouter);
 
   app.use((_req, res) => {

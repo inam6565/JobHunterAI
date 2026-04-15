@@ -8,7 +8,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 FROM deps AS build
-COPY tsconfig.json eslint.config.js vitest.config.ts .prettierrc.json ./
+COPY tsconfig.json tsconfig.build.json tsconfig.test.json eslint.config.js vitest.config.ts .prettierrc.json ./
 COPY src ./src
 COPY test ./test
 RUN npm run build

@@ -8,14 +8,14 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
     "ci": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "dotenv-safe": "9.1.0",
     "express": "5.1.0",
     "helmet": "8.1.0",
+    "pg": "8.16.3",
     "pino": "9.7.0",
     "pino-http": "10.5.0",
     "zod": "4.1.5"
@@ -32,6 +33,7 @@
     "@types/cors": "2.8.19",
     "@types/express": "5.0.3",
     "@types/node": "24.3.1",
+    "@types/pg": "8.15.5",
     "eslint": "9.35.0",
     "eslint-config-prettier": "10.1.8",
     "globals": "16.4.0",
